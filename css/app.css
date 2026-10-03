@@ -89,8 +89,8 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 64px;
-  padding: 0 16px;
+  height: calc(64px + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) 16px 0;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
@@ -860,6 +860,7 @@ textarea.sm {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .mobile-nav button {
@@ -877,10 +878,44 @@ textarea.sm {
   color: var(--accent);
 }
 
+.install-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.install-bar[hidden] {
+  display: none;
+}
+
+.install-bar p {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--fg);
+}
+
+@media (min-width: 1024px) {
+  .install-bar {
+    display: none;
+  }
+}
+
+@media (display-mode: standalone) {
+  .install-bar {
+    display: none !important;
+  }
+}
+
 .toasts {
   position: fixed;
   right: 16px;
-  bottom: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 8px;

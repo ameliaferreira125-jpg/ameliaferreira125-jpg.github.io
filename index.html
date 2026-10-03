@@ -3,16 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Fábrica de Posts" />
     <title>Fábrica de Posts Infinitos</title>
     <meta name="theme-color" content="#090D16" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Fábrica" />
     <meta
       name="description"
       content="Estudio visual para componer posts de Facebook a tamaño nativo: 1080×1080, 4:5 y 1.91:1."
     />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -72,6 +75,12 @@
         <aside class="rail rail-right" id="inspector"></aside>
       </div>
 
+      <div class="install-bar" id="installBar" hidden>
+        <p id="installCopy">Úsala como app desde la pantalla de inicio.</p>
+        <button type="button" class="btn btn-accent btn-sm" id="installBtn" hidden>Instalar</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="installDismiss">Cerrar</button>
+      </div>
+
       <nav class="mobile-nav" aria-label="Secciones">
         <button type="button" data-tab="canvas" class="is-active">Lienzo</button>
         <button type="button" data-tab="source">Imagen</button>
@@ -86,5 +95,42 @@
       <p class="noscript">Activa JavaScript para usar el estudio.</p>
     </noscript>
     <script src="./js/app.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js");
+      }
+      (() => {
+        const bar = document.getElementById("installBar");
+        const btn = document.getElementById("installBtn");
+        const copy = document.getElementById("installCopy");
+        const standalone =
+          window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+        if (standalone || localStorage.getItem("fabrica-install-dismissed") === "1") return;
+        const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        let deferred;
+        window.addEventListener("beforeinstallprompt", (event) => {
+          event.preventDefault();
+          deferred = event;
+          copy.textContent = "Instálala y ábrela como una app, sin el navegador.";
+          btn.hidden = false;
+          bar.hidden = false;
+        });
+        if (ios) {
+          copy.textContent = "En Safari: Compartir → Añadir a pantalla de inicio.";
+          bar.hidden = false;
+        }
+        btn.addEventListener("click", async () => {
+          if (!deferred) return;
+          deferred.prompt();
+          await deferred.userChoice;
+          deferred = null;
+          bar.hidden = true;
+        });
+        document.getElementById("installDismiss").addEventListener("click", () => {
+          localStorage.setItem("fabrica-install-dismissed", "1");
+          bar.hidden = true;
+        });
+      })();
+    </script>
   </body>
 </html>
