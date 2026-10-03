@@ -4,6 +4,7 @@
   const FORMATS = {
     square: {
       id: "square",
+      platform: "facebook",
       index: "01",
       label: "Feed cuadrado",
       short: "1:1",
@@ -14,6 +15,7 @@
     },
     portrait: {
       id: "portrait",
+      platform: "facebook",
       index: "02",
       label: "Feed vertical",
       short: "4:5",
@@ -24,6 +26,7 @@
     },
     landscape: {
       id: "landscape",
+      platform: "facebook",
       index: "03",
       label: "Feed paisaje",
       short: "1.91:1",
@@ -32,9 +35,36 @@
       ratio: "1.91:1",
       hint: "Enlace y portada de enlace. El recorte horizontal clásico de Facebook.",
     },
+    stories: {
+      id: "stories",
+      platform: "instagram",
+      index: "04",
+      label: "Stories",
+      short: "9:16",
+      width: 1080,
+      height: 1920,
+      ratio: "9:16",
+      hint: "Pantalla completa en Instagram y Facebook Stories. 1080 × 1920.",
+    },
+    pin: {
+      id: "pin",
+      platform: "pinterest",
+      index: "05",
+      label: "Pin vertical",
+      short: "2:3",
+      width: 1080,
+      height: 1620,
+      ratio: "2:3",
+      hint: "Pin estándar de Pinterest. Máxima visibilidad en el feed.",
+    },
   };
 
-  const FORMAT_LIST = [FORMATS.square, FORMATS.portrait, FORMATS.landscape];
+  const FORMAT_LIST = [FORMATS.square, FORMATS.portrait, FORMATS.landscape, FORMATS.stories, FORMATS.pin];
+  const FORMAT_GROUPS = [
+    { label: "Facebook", items: FORMAT_LIST.filter((item) => item.platform === "facebook") },
+    { label: "Instagram", items: FORMAT_LIST.filter((item) => item.platform === "instagram") },
+    { label: "Pinterest", items: FORMAT_LIST.filter((item) => item.platform === "pinterest") },
+  ];
   const TEMPLATES = [
     { id: "editorial", label: "Editorial", index: "A" },
     { id: "quote", label: "Cita", index: "B" },
@@ -582,9 +612,13 @@
     document.getElementById("sidebar").innerHTML = `
       <div class="panel">
         <section class="section">
-          <div class="section-title"><span class="idx">01</span><h2>Formato Facebook</h2></div>
-          ${FORMAT_LIST.map(
-            (item) => `
+          <div class="section-title"><span class="idx">01</span><h2>Formato</h2></div>
+          ${FORMAT_GROUPS.map(
+            (group) => `
+            <p class="platform-label">${group.label}</p>
+            ${group.items
+              .map(
+                (item) => `
             <button type="button" class="format-btn ${item.id === state.formatId ? "is-active" : ""}" data-format="${item.id}">
               <div class="format-top">
                 <strong>${item.label}</strong>
@@ -593,6 +627,9 @@
               <p class="size">${item.width} × ${item.height}</p>
               <p class="desc">${item.hint}</p>
             </button>
+          `,
+              )
+              .join("")}
           `,
           ).join("")}
         </section>
